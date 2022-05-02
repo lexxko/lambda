@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.integration.annotation.InboundChannelAdapter;
 import org.springframework.integration.channel.DirectChannel;
+import org.springframework.integration.channel.FluxMessageChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.feed.inbound.FeedEntryMessageSource;
 import org.springframework.messaging.MessageChannel;
@@ -24,8 +25,8 @@ public class FeedCfg {
     private String feedUrl;
 
     @Bean("feedChannel")
-    MessageChannel channel() {
-        return new DirectChannel();
+    FluxMessageChannel channel() {
+        return new FluxMessageChannel();
     }
 
     @Bean

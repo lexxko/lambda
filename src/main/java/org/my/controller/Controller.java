@@ -1,6 +1,6 @@
-package org.example.controller;
+package org.my.controller;
 
-import org.example.service.FeedService;
+import org.my.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

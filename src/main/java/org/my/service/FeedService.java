@@ -1,4 +1,4 @@
-package org.example.service;
+package org.my.service;
 
 import com.rometools.rome.feed.synd.SyndEntryImpl;
 import org.slf4j.Logger;

@@ -26,44 +26,45 @@ public class FeedService {
     }
 
     public Mono<String> feedStart() {
-        if (!isDisposed()) {
-            final String message = "Feeding already started!";
-            log.info(message);
-            return Mono.just(message);
-        }
+        synchronized (this) {
+            if (!isDisposed()) {
+                final String message = "Feeding already started!";
+                log.info(message);
+                return Mono.just(message);
+            }
 
-        disposable = Flux.from(channel)
-                .doOnSubscribe(s -> log.info("Feeding started!"))
-                .map(Message::getPayload)
-                .filter(Objects::nonNull)
-                .map(msg -> (SyndEntryImpl) msg)
-                .filter(msg -> !msg.getTitle().isEmpty() && !msg.getLink().isEmpty())
-                .doOnNext(msg -> log.info(msg.getTitle() + " " + removeUrlParams(msg.getLink())))
-                .doOnError(ClassCastException.class, e -> log.error("Class cast error: " + e.getMessage()))
-                .doOnError(err -> log.error(err.toString()))
-                .doOnComplete(() -> log.info("Feeding completed!"))
-                .subscribe();
+            disposable = Flux.from(channel)
+                    .doOnSubscribe(s -> log.info("Feeding started!"))
+                    .map(Message::getPayload)
+                    .filter(Objects::nonNull)
+                    .map(msg -> (SyndEntryImpl) msg)
+                    .filter(msg -> !msg.getTitle().isEmpty() && !msg.getLink().isEmpty())
+                    .doOnNext(msg -> log.info(msg.getTitle() + " " + removeUrlParams(msg.getLink())))
+                    .doOnError(ClassCastException.class, e -> log.error("Class cast error: " + e.getMessage()))
+                    .doOnError(err -> log.error(err.toString()))
+                    .doOnComplete(() -> log.info("Feeding completed!"))
+                    .subscribe();
+        }
 
         return Mono.just("Feeding started!");
     }
 
     public Mono<String> feedStop() {
-        if (isDisposed()) {
-            final String message = "Feeding already stopped!";
-            log.info(message);
-            return Mono.just(message);
+        synchronized (this) {
+            if (isDisposed()) {
+                final String message = "Feeding already stopped!";
+                log.info(message);
+                return Mono.just(message);
+            }
+
+            Objects.requireNonNull(disposable).dispose();
+            log.info("Feeding stopped!");
         }
-
-        Objects.requireNonNull(disposable).dispose();
-        log.info("Feeding stopped!");
-
         return Mono.just("Feeding stopped!");
     }
 
     private boolean isDisposed() {
-        synchronized (this) {
-            return disposable == null || disposable.isDisposed();
-        }
+        return disposable == null || disposable.isDisposed();
     }
 
     private static String removeUrlParams(String url) {

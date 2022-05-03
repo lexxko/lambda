@@ -9,6 +9,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.util.annotation.Nullable;
 
 import java.util.Objects;
@@ -24,11 +25,8 @@ public class FeedService {
         this.channel = channel;
     }
 
-    public void startFeed() {
-        if (disposable != null && !disposable.isDisposed()) {
-            log.info("Feeding already started!");
-            return;
-        }
+    public Mono<String> feedStart() {
+        if (!isDisposed()) return Mono.just("Feeding already started!");
 
         disposable = Flux.from(channel)
                 .doOnSubscribe(s -> log.info("Feeding started!"))
@@ -41,16 +39,28 @@ public class FeedService {
                 .doOnError(err -> log.error(err.toString()))
                 .doOnComplete(() -> log.info("Feeding completed!"))
                 .subscribe();
+
+        return Mono.just("Feeding started!");
     }
 
-    public void stopFeed() {
-        if (disposable == null || disposable.isDisposed()) {
-            log.info("Feeding already stopped!");
-            return;
-        }
+    public Mono<String> feedStop() {
+        if (isDisposed()) return Mono.just("Feeding already stopped!");
 
-        disposable.dispose();
+        Objects.requireNonNull(disposable).dispose();
         log.info("Feeding stopped!");
+
+        return Mono.just("Feeding stopped!");
+    }
+
+    private boolean isDisposed() {
+        synchronized (this) {
+            if (disposable == null || disposable.isDisposed()) {
+                log.info("Feeding already stopped!");
+                return true;
+            }
+            log.info("Feeding already started!");
+            return false;
+        }
     }
 
     private static String removeUrlParams(String url) {

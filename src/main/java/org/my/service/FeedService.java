@@ -26,7 +26,11 @@ public class FeedService {
     }
 
     public Mono<String> feedStart() {
-        if (!isDisposed()) return Mono.just("Feeding already started!");
+        if (!isDisposed()) {
+            final String message = "Feeding already started!";
+            log.info(message);
+            return Mono.just(message);
+        }
 
         disposable = Flux.from(channel)
                 .doOnSubscribe(s -> log.info("Feeding started!"))
@@ -44,7 +48,11 @@ public class FeedService {
     }
 
     public Mono<String> feedStop() {
-        if (isDisposed()) return Mono.just("Feeding already stopped!");
+        if (isDisposed()) {
+            final String message = "Feeding already stopped!";
+            log.info(message);
+            return Mono.just(message);
+        }
 
         Objects.requireNonNull(disposable).dispose();
         log.info("Feeding stopped!");
@@ -54,12 +62,7 @@ public class FeedService {
 
     private boolean isDisposed() {
         synchronized (this) {
-            if (disposable == null || disposable.isDisposed()) {
-                log.info("Feeding already stopped!");
-                return true;
-            }
-            log.info("Feeding already started!");
-            return false;
+            return disposable == null || disposable.isDisposed();
         }
     }
 

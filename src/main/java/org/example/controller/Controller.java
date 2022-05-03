@@ -20,8 +20,13 @@ public class Controller {
         return Mono.just("Hi, " + name + "!");
     }
 
-    @GetMapping(path = "feed")
+    @GetMapping(path = "startFeed")
     public void startFeed() {
-        feedService.processFeed();
+        feedService.startFeed();
+    }
+
+    @GetMapping(path = "stopFeed")
+    public void stopFeed() {
+        feedService.stopFeed();
     }
 }

@@ -1,53 +1,59 @@
 package org.example.service;
 
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import com.rometools.rome.feed.synd.SyndEntryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.channel.FluxMessageChannel;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Service;
+import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
+import reactor.util.annotation.Nullable;
+
+import java.util.Objects;
 
 @Service
 public class FeedService {
     public static final Logger log = LoggerFactory.getLogger(FeedService.class);
     private final FluxMessageChannel channel;
+    private @Nullable Disposable disposable = null;
 
     @Autowired
     public FeedService(FluxMessageChannel channel) {
         this.channel = channel;
     }
 
-    public void processFeed() {
-        channel.subscribe(new Subscriber<Message<?>>() {
-            @Override
-            public void onSubscribe(Subscription s) {
-                log.info(s.toString());
-            }
+    public void startFeed() {
+        if (disposable != null && !disposable.isDisposed()) {
+            log.info("Feeding already started!");
+            return;
+        }
 
-            @Override
-            public void onNext(Message<?> message) {
-                log.info(message.getPayload().toString());
-                System.out.println(message.getPayload());
-            }
-
-            @Override
-            public void onError(Throwable t) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
+        disposable = Flux.from(channel)
+                .doOnSubscribe(s -> log.info("Feeding started!"))
+                .map(Message::getPayload)
+                .filter(Objects::nonNull)
+                .map(msg -> (SyndEntryImpl) msg)
+                .filter(msg -> !msg.getTitle().isEmpty() && !msg.getLink().isEmpty())
+                .doOnNext(msg -> log.info(msg.getTitle() + " " + removeUrlParams(msg.getLink())))
+                .doOnError(ClassCastException.class, e -> log.error("Class cast error: " + e.getMessage()))
+                .doOnError(err -> log.error(err.toString()))
+                .doOnComplete(() -> log.info("Feeding completed!"))
+                .subscribe();
     }
 
-    private void processMessage(Message message){
+    public void stopFeed() {
+        if (disposable == null || disposable.isDisposed()) {
+            log.info("Feeding already stopped!");
+            return;
+        }
 
+        disposable.dispose();
+        log.info("Feeding stopped!");
     }
 
-
+    private static String removeUrlParams(String url) {
+        return url.substring(0, url.lastIndexOf('?'));
+    }
 }

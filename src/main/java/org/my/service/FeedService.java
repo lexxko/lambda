@@ -87,4 +87,9 @@ public class FeedService {
     private static String removeUrlParams(String url) {
         return url.substring(0, url.lastIndexOf('?'));
     }
+
+    public Mono<String> feedClear() {
+        feed.clear();
+        return Mono.just("Cleared!");
+    }
 }

@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Main-Class: org.my.LambdaApplication
+Class-Path: jakarta.annotation-api-1.3.5.jar logback-classic-1.2.11.jar 
+ netty-resolver-dns-native-macos-4.1.76.Final-osx-x86_64.jar netty-handl
+ er-proxy-4.1.76.Final.jar netty-codec-http-4.1.76.Final.jar spring-mess
+ aging-5.3.19.jar netty-codec-http2-4.1.76.Final.jar netty-codec-socks-4
+ .1.76.Final.jar snakeyaml-1.29.jar rome-1.16.0.jar spring-aop-5.3.19.ja
+ r spring-context-5.3.19.jar netty-resolver-4.1.76.Final.jar spring-inte
+ gration-feed-5.5.11.jar rome-utils-1.16.0.jar jackson-datatype-jdk8-2.1
+ 3.2.jar spring-boot-starter-reactor-netty-2.6.7.jar netty-transport-nat
+ ive-unix-common-4.1.76.Final.jar jackson-datatype-jsr310-2.13.2.jar jdo
+ m2-2.0.6.1.jar spring-core-5.3.19.jar jul-to-slf4j-1.7.36.jar spring-jc
+ l-5.3.19.jar spring-boot-starter-logging-2.6.7.jar netty-common-4.1.76.
+ Final.jar logback-core-1.2.11.jar reactive-streams-1.0.3.jar spring-tx-
+ 5.3.19.jar spring-boot-starter-json-2.6.7.jar netty-codec-dns-4.1.76.Fi
+ nal.jar netty-transport-classes-epoll-4.1.76.Final.jar spring-beans-5.3
+ .19.jar spring-boot-starter-2.6.7.jar netty-handler-4.1.76.Final.jar sp
+ ring-boot-2.6.7.jar netty-buffer-4.1.76.Final.jar spring-integration-co
+ re-5.5.11.jar spring-webflux-5.3.19.jar jackson-databind-2.13.2.1.jar s
+ lf4j-api-1.7.36.jar spring-web-5.3.19.jar log4j-to-slf4j-2.17.2.jar rea
+ ctor-netty-core-1.0.18.jar lombok-1.18.24.jar jackson-core-2.13.2.jar j
+ ackson-annotations-2.13.2.jar spring-retry-1.3.3.jar netty-codec-4.1.76
+ .Final.jar netty-resolver-dns-classes-macos-4.1.76.Final.jar spring-exp
+ ression-5.3.19.jar jackson-module-parameter-names-2.13.2.jar spring-boo
+ t-starter-webflux-2.6.7.jar spring-boot-autoconfigure-2.6.7.jar netty-r
+ esolver-dns-4.1.76.Final.jar reactor-core-3.4.17.jar log4j-api-2.17.2.j
+ ar netty-transport-native-epoll-4.1.76.Final-linux-x86_64.jar reactor-n
+ etty-http-1.0.18.jar netty-transport-4.1.76.Final.jar
+

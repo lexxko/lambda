@@ -67,10 +67,17 @@ public class FeedService {
 
     public Flux<Tuple2<String, String>> feedDisplay() {
         if (feed.isEmpty()) {
+            log.info("No data to display");
             return Flux.just(Tuples.of("No data", "No data"));
         }
-
+        log.info("Feed data displayed");
         return Flux.fromIterable(feed);
+    }
+
+    public Mono<String> feedClear() {
+        feed.clear();
+        log.info("Feed data cleared");
+        return Mono.just("Cleared!");
     }
 
     private void processMessage(SyndEntryImpl msg) {
@@ -86,10 +93,5 @@ public class FeedService {
 
     private static String removeUrlParams(String url) {
         return url.substring(0, url.lastIndexOf('?'));
-    }
-
-    public Mono<String> feedClear() {
-        feed.clear();
-        return Mono.just("Cleared!");
     }
 }

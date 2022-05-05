@@ -32,7 +32,8 @@ public class Controller {
                 refFun.apply("start", true),
                 refFun.apply("stop", true),
                 refFun.apply("display", false),
-                refFun.apply("clear", false)
+                refFun.apply("clear", false),
+                refFun.apply("reset", false)
         );
     }
 
@@ -60,6 +61,11 @@ public class Controller {
     @GetMapping(path = "clear")
     public Mono<String> feedClear() {
         return feedService.feedClear();
+    }
+
+    @GetMapping(path = "reset")
+    public Mono<String> feedReset() {
+        return feedService.feedReset();
     }
 
     private static String createHyperlink(Tuple2<String, String> tuple) {

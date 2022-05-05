@@ -1,6 +1,7 @@
 package org.my.service;
 
 import com.rometools.rome.feed.synd.SyndEntryImpl;
+import org.my.config.FeedEntryMessageSourceWithReset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,21 +16,27 @@ import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Service
 public class FeedService {
     public static final Logger log = LoggerFactory.getLogger(FeedService.class);
+
+    private final Object monitor = new Object();
     private final FluxMessageChannel channel;
+    private final FeedEntryMessageSourceWithReset source;
     private @Nullable Disposable disposable = null;
     private final List<Tuple2<String, String>> feed = new ArrayList<>();
 
     @Autowired
-    public FeedService(FluxMessageChannel channel) {
+    public FeedService(FluxMessageChannel channel, FeedEntryMessageSourceWithReset source) {
         this.channel = channel;
+        this.source = source;
     }
 
     public Mono<String> feedStart() {
-        synchronized (this) {
+        synchronized (this.monitor) {
             if (!isDisposed()) {
                 final String message = "Feeding already started!";
                 log.info(message);
@@ -52,7 +59,7 @@ public class FeedService {
     }
 
     public Mono<String> feedStop() {
-        synchronized (this) {
+        synchronized (this.monitor) {
             if (isDisposed()) {
                 final String message = "Feeding already stopped!";
                 log.info(message);
@@ -77,7 +84,21 @@ public class FeedService {
     public Mono<String> feedClear() {
         feed.clear();
         log.info("Feed data cleared");
+
         return Mono.just("Cleared!");
+    }
+
+    public Mono<String> feedReset() {
+        final Function<String, String> resetFun = msg -> {
+            try {
+                source.reset();
+                return "Feed was reset!";
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                log.error("Error during resetting! " + e);
+                return "Error during resetting!";
+            }
+        };
+        return feedClear().map(resetFun);
     }
 
     private void processMessage(SyndEntryImpl msg) {

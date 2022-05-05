@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.UrlResource;
 import org.springframework.integration.annotation.InboundChannelAdapter;
 import org.springframework.integration.channel.FluxMessageChannel;
-import org.springframework.integration.feed.inbound.FeedEntryMessageSource;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -23,12 +22,12 @@ public class FeedCfg {
 
     @Bean("feedChannel")
     FluxMessageChannel channel() {
-        return new FluxMessageChannel();
+        return new FluxMessageChannelSafe();
     }
 
     @Bean
     @InboundChannelAdapter("feedChannel")
-    FeedEntryMessageSource feedEntrySource() {
+    FeedEntryMessageSourceWithReset feedEntrySource() {
         UrlResource urlResource;
 
         try {
@@ -43,6 +42,6 @@ public class FeedCfg {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        return new FeedEntryMessageSource(urlResource, "lambda");
+        return new FeedEntryMessageSourceWithReset(urlResource, "lambda");
     }
 }

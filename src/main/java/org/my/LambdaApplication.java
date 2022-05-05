@@ -1,5 +1,7 @@
 package org.my;
 
+import com.azure.spring.data.cosmos.repository.config.EnableCosmosRepositories;
+import com.azure.spring.data.cosmos.repository.config.EnableReactiveCosmosRepositories;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,6 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.integration.config.EnableIntegration;
 
 @EnableIntegration
+@EnableReactiveCosmosRepositories
 @SpringBootApplication
 public class LambdaApplication {
     private static ConfigurableApplicationContext context;

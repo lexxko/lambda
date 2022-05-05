@@ -4,3 +4,11 @@ lambda:
 #  feedUrl: "http://rss.cnn.com/rss/edition_technology.rss"
 #  feedUrl: "http://feeds.bbci.co.uk/news/england/london/rss.xml"
   feedUrl: "http://feeds.bbci.co.uk/news/politics/rss.xml"
+
+azure:
+  cosmos:
+    uri: ""
+    key: ""
+    secondaryKey: ""
+    dbName: ""
+    queryMetricsEnabled: "true"

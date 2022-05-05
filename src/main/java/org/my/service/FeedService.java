@@ -1,11 +1,12 @@
 package org.my.service;
 
 import com.rometools.rome.feed.synd.SyndEntryImpl;
-import org.my.config.FeedEntryMessageSourceWithReset;
+import org.my.LambdaApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.channel.FluxMessageChannel;
+import org.springframework.integration.feed.inbound.FeedEntryMessageSource;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import reactor.core.Disposable;
@@ -15,9 +16,9 @@ import reactor.util.annotation.Nullable;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FeedService {
@@ -25,14 +26,18 @@ public class FeedService {
 
     private final Object monitor = new Object();
     private final FluxMessageChannel channel;
-    private final FeedEntryMessageSourceWithReset source;
+    private final FeedEntryMessageSource source;
+    private final LambdaApplication application;
     private @Nullable Disposable disposable = null;
     private final List<Tuple2<String, String>> feed = new ArrayList<>();
 
     @Autowired
-    public FeedService(FluxMessageChannel channel, FeedEntryMessageSourceWithReset source) {
+    public FeedService(FluxMessageChannel channel,
+                       FeedEntryMessageSource source,
+                       LambdaApplication application) {
         this.channel = channel;
         this.source = source;
+        this.application = application;
     }
 
     public Mono<String> feedStart() {
@@ -89,16 +94,9 @@ public class FeedService {
     }
 
     public Mono<String> feedReset() {
-        final Function<String, String> resetFun = msg -> {
-            try {
-                source.reset();
-                return "Feed was reset!";
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                log.error("Error during resetting! " + e);
-                return "Error during resetting!";
-            }
-        };
-        return feedClear().map(resetFun);
+        return Mono.just("Reset!")
+                .doOnEach(x -> log.info("Reset!"))
+                .doFinally(x -> LambdaApplication.restart());
     }
 
     private void processMessage(SyndEntryImpl msg) {

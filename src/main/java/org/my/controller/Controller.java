@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.annotation.Nullable;
 import reactor.util.function.Tuple2;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -33,7 +35,8 @@ public class Controller {
                 refFun.apply("stop", true),
                 refFun.apply("display", false),
                 refFun.apply("clear", false),
-                refFun.apply("reset", false)
+                refFun.apply("reset", false),
+                refFun.apply("archive", false)
         );
     }
 
@@ -66,6 +69,13 @@ public class Controller {
     @GetMapping(path = "reset")
     public Mono<String> feedReset() {
         return feedService.feedReset();
+    }
+
+    @GetMapping(path = "archive")
+    public Flux<String> getArchivedFeed(@RequestParam(name = "from", required = false) @Nullable LocalDate from,
+                                        @RequestParam(name = "to", required = false) @Nullable LocalDate to) {
+        return feedService.getArchivedFeed(from, to)
+                .map(Controller::createHyperlink);
     }
 
     private static String createHyperlink(Tuple2<String, String> tuple) {

@@ -7,8 +7,12 @@ lambda:
 
 azure:
   cosmos:
-    uri: ""
-    key: ""
-    secondaryKey: ""
-    dbName: ""
+    uri: "https://lambda-db.documents.azure.com:443/"
+    key: "dFexsoDGPdOi7kyKZOirB3lhHr1AgbgKdUNwoWOJZzpWoJayh25PoWB2Um6BxsGIyJX2ZRCjA6VL1oLGFIgnJQ=="
+    secondaryKey: "ngsIvS15mRBSriI0ESZz8nqIwqROKsFFrNkHxvxM7QaehCkpLZzj8CvmG2ytyDzURjQ2VNSnXJpywH8UAr8FXA=="
+    dbName: "feed_archive"
     queryMetricsEnabled: "true"
+
+logging:
+  level:
+    com.azure.cosmos: INFO

@@ -15,7 +15,8 @@ azure:
 
 logging:
   level:
-    com.azure.cosmos: "INFO"
+    com.azure.cosmos: INFO
+    org.my.service: DEBUG
 
 spring:
   jackson:

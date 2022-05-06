@@ -1,8 +1,9 @@
 package org.my.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rometools.rome.feed.synd.SyndEntry;
 import org.my.LambdaApplication;
-import org.my.model.FeedRecord;
+import org.my.model.FeedRecordC;
 import org.my.repo.FeedRecordsRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,19 +116,19 @@ public class FeedService {
         }
 
         return feedRecordsRepo.findAllByDateBetween(from, to)
+                .doOnNext(rec -> log.debug("Archived: {} {} {}", rec.getDate(), rec.getTitle(), rec.getLink()))
                 .map(rec -> Tuples.of(rec.getLink(), rec.getTitle()));
     }
 
-    private Mono<FeedRecord> saveToDb(SyndEntry msg) {
+    private Mono<FeedRecordC> saveToDb(SyndEntry msg) {
         final String link = removeUrlParams(msg.getLink());
         final String title = msg.getTitle();
         final LocalDate date = msg.getPublishedDate().toInstant().atZone(ZoneId.of(ZONE_ZERO_OFFSET)).toLocalDate();
-        final long checksum = FeedRecord.getId(date, title, link);
-        return feedRecordsRepo.save(new FeedRecord(checksum, date, title, link))
+        return feedRecordsRepo.save(new FeedRecordC(date, title, link))
                 .doOnSuccess(r -> log.info("Record saved to DB: {}", r));
     }
 
-    private void process(FeedRecord record) {
+    private void process(FeedRecordC record) {
         final String link = record.getLink();
         final String title = record.getTitle();
         feed.add(Tuples.of(link, title));

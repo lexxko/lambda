@@ -6,6 +6,7 @@ import reactor.core.publisher.Sinks;
 
 import java.lang.reflect.Field;
 
+@Deprecated
 public class FluxMessageChannelSafe extends FluxMessageChannel {
 
     @Override

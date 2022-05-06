@@ -15,4 +15,8 @@ azure:
 
 logging:
   level:
-    com.azure.cosmos: INFO
+    com.azure.cosmos: "INFO"
+
+spring:
+  jackson:
+    default-property-inclusion: "non_null"

@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Queue;
 
+@Deprecated
 public class FeedEntryMessageSourceWithReset extends FeedEntryMessageSource {
     public FeedEntryMessageSourceWithReset(URL feedUrl, String metadataKey) {
         super(feedUrl, metadataKey);

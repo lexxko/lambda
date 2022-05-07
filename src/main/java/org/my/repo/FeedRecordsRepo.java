@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
 import java.time.LocalDate;
 
 @Repository
-public interface FeedRecordsRepo extends ReactiveCosmosRepository<FeedRecord, Long> {
+public interface FeedRecordsRepo extends ReactiveCosmosRepository<FeedRecord, String> {
 
     default Flux<FeedRecord> findAllByDateBetween(LocalDate from, LocalDate to) {
         return findAllByDateBetween(from.toString(), to.toString());

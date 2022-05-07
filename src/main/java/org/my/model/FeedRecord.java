@@ -25,7 +25,7 @@ import java.util.zip.Checksum;
 public class FeedRecord {
     @Id
     @PartitionKey
-    private Long id;
+    private String id;
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -34,7 +34,7 @@ public class FeedRecord {
     private String link;
 
     public FeedRecord(@NonNull LocalDate date, @NonNull String title, @NonNull String link) {
-        this.id = createId(date, title, link);
+        this.id = String.valueOf(createId(date, title, link));
         this.date = date;
         this.title = title;
         this.link = link;

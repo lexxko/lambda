@@ -14,6 +14,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
@@ -25,7 +26,7 @@ import java.util.zip.Checksum;
 public class FeedRecord {
     @Id
     @PartitionKey
-    private String id;
+    private Long id;
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -34,7 +35,7 @@ public class FeedRecord {
     private String link;
 
     public FeedRecord(@NonNull LocalDate date, @NonNull String title, @NonNull String link) {
-        this.id = String.valueOf(createId(date, title, link));
+        this.id = createId(date, title, link);
         this.date = date;
         this.title = title;
         this.link = link;
@@ -43,7 +44,7 @@ public class FeedRecord {
     public static long createId(@NonNull LocalDate date,
                                 @NonNull String title,
                                 @NonNull String link) {
-        return getCRC32Checksum(Stream.of(date.toString(), title, link).toString().getBytes());
+        return getCRC32Checksum(String.join("", date.toString(), title, link).getBytes());
     }
 
     private static long getCRC32Checksum(byte[] bytes) {

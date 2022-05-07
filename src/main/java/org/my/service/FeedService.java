@@ -4,6 +4,7 @@ import com.rometools.rome.feed.synd.SyndEntry;
 import org.my.LambdaApplication;
 import org.my.model.FeedRecord;
 import org.my.repo.FeedRecordsRepo;
+import org.my.util.ParseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,15 +101,23 @@ public class FeedService {
                 .doFinally(x -> LambdaApplication.restart());
     }
 
-    public Flux<Tuple2<String, String>> getArchivedFeed(@Nullable LocalDate from, @Nullable LocalDate to) {
-        if (from == null) {
+    public Flux<Tuple2<String, String>> getArchivedFeed(@Nullable final String sFrom, @Nullable final String sTo) {
+        final LocalDate from;
+        LocalDate to;
+
+        if (sFrom == null) {
             from = LocalDate.now();
             log.info("Select range lower bound set to current date");
+        } else {
+            from = ParseUtil.parseDate(sFrom, LocalDate::now);
         }
-        if (to == null) {
+        if (sTo == null) {
             to = LocalDate.now();
             log.info("Select range upper bound set to current date");
+        } else {
+            to = ParseUtil.parseDate(sTo, LocalDate::now);
         }
+
         if (to.isBefore(from)) {
             to = from;
             log.info("Upper bound date can't be before lower bound date. Set as equal");

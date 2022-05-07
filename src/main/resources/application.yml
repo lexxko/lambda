@@ -17,6 +17,7 @@ logging:
   level:
     com.azure.cosmos: INFO
     org.my.service: DEBUG
+    com.fasterxml.jackson: INFO
 
 spring:
   jackson:

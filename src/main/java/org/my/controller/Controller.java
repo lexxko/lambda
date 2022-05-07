@@ -75,8 +75,8 @@ public class Controller {
     }
 
     @GetMapping(path = "archive")
-    public Flux<String> getArchivedFeed(@RequestParam(name = "from", required = false) @Nullable LocalDate from,
-                                        @RequestParam(name = "to", required = false) @Nullable LocalDate to) {
+    public Flux<String> getArchivedFeed(@RequestParam(name = "from", required = false) @Nullable String from,
+                                        @RequestParam(name = "to", required = false) @Nullable String to) {
         return feedService.getArchivedFeed(from, to)
                 .map(Controller::createHyperlink);
     }

@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 public final class ParseUtil {
     public static final Logger log = LoggerFactory.getLogger(ParseUtil.class);
+
     private ParseUtil() {
     }
 
@@ -16,7 +17,7 @@ public final class ParseUtil {
         try {
             return LocalDate.parse(date);
         } catch (DateTimeException ex) {
-            log.warn("Fallback activated: "+ ex);
+            log.warn("Fallback activated: " + ex);
             return fallbackValueSupplier.get();
         }
     }

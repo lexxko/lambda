@@ -82,9 +82,9 @@ public class FeedService {
     public Flux<Tuple2<String, String>> feedDisplay() {
         if (feed.isEmpty()) {
             log.info("No data to display");
-            return Flux.just(Tuples.of("No data", "No data"));
+        } else {
+            log.info("Feed data displayed");
         }
-        log.info("Feed data displayed");
         return Flux.fromIterable(feed);
     }
 

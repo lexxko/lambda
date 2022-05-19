@@ -1,8 +1,5 @@
 package org.my.controller;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import org.my.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +9,9 @@ import reactor.core.publisher.Mono;
 import reactor.util.annotation.Nullable;
 import reactor.util.function.Tuple2;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("feed")
@@ -45,50 +41,47 @@ public class Controller {
     }
 
     @GetMapping(path = "hi")
-    public Mono<String> execute(@RequestParam("name") String name) {
-        return Mono.just(String.format("Hi, %s!<br>By the way, my server time is %s", name, LocalTime.now()));
+    public ResponseEntity<Mono<String>> execute(@RequestParam("name") String name) {
+        return succeedRs(() -> Mono.just(
+                String.format("Hi, %s!<br>By the way, my server time is %s", name, LocalTime.now())), false);
     }
 
     @GetMapping(path = "start")
-    public Mono<String> feedStart() {
-        return feedService.feedStart();
+    public ResponseEntity<Mono<String>> feedStart() {
+        return succeedRs(feedService::feedStart, false);
     }
 
     @GetMapping(path = "stop")
-    public Mono<String> feedStop() {
-        return feedService.feedStop();
+    public ResponseEntity<Mono<String>> feedStop() {
+        return succeedRs(feedService::feedStop, false);
     }
 
     @GetMapping(path = "display")
-    public Flux<String> feedDisplay() {
-        return feedService.feedDisplay()
-                .map(Controller::createHyperlink);
+    public ResponseEntity<Flux<Tuple2<String, String>>> feedDisplay() {
+        return succeedRs(feedService::feedDisplay, true);
     }
 
     @GetMapping(path = "clear")
-    public Mono<String> feedClear() {
-        return feedService.feedClear();
+    public ResponseEntity<Mono<String>> feedClear() {
+        return succeedRs(feedService::feedClear, false);
     }
 
     @GetMapping(path = "reset")
-    public Mono<String> feedReset() {
-        return feedService.feedReset();
+    public ResponseEntity<Mono<String>> feedReset() {
+        return succeedRs(feedService::feedReset, false);
     }
 
     @GetMapping(path = "archive")
     public ResponseEntity<Flux<Tuple2<String, String>>> getArchivedFeed(@RequestParam(name = "from", required = false) @Nullable String from,
-                                                        @RequestParam(name = "to", required = false) @Nullable String to) {
-        return ResponseEntity
-                .ok()
-                .header("Access-Control-Allow-Origin", "*")
-                .body(feedService.getArchivedFeed(from, to));
+                                                                        @RequestParam(name = "to", required = false) @Nullable String to) {
+        return succeedRs(() -> feedService.getArchivedFeed(from, to), true);
     }
 
-    private static String createHyperlink(Tuple2<String, String> tuple) {
-        if (tuple.getT1().contains("No data") || tuple.getT2().contains("No data")) {
-            return "No data";
-        }
-
-        return String.format("<a href=%s>%s</a><br>", tuple.getT1(), tuple.getT2());
+    private static <T> ResponseEntity<T> succeedRs(Supplier<T> tSupplier, boolean json) {
+        return ResponseEntity
+                .ok()
+                .header("Access-Control-Allow-Origin", "*") // TODO: remove (not critical because of Azure CORS overlay)
+                .header("Content-Type", json ? "application/json" : "text/plain")
+                .body(tSupplier.get());
     }
 }

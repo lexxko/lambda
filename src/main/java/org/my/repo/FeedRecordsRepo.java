@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public interface FeedRecordsRepo extends ReactiveCosmosRepository<FeedRecord, String> {
 
     default Flux<FeedRecord> findAllByDateBetween(LocalDate from, LocalDate to) {
-        return findAllByDateBetween(from.toString(), to.toString()); // TODO Implicit equality LocalDate.toString and @JsonFormat(pattern = "yyyy-MM-dd") in FeedRecord class
+        return findAllByDateBetween(from.toString(), to.toString()); // TODO: Implicit equality LocalDate.toString and @JsonFormat(pattern = "yyyy-MM-dd") in FeedRecord class
     }
 
     Flux<FeedRecord> findAllByDateBetween(String from, String to);

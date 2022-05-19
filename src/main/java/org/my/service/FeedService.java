@@ -105,13 +105,13 @@ public class FeedService {
         final LocalDate from;
         LocalDate to;
 
-        if (sFrom == null) {
+        if (sFrom == null || sFrom.isEmpty()) {
             from = LocalDate.now();
             log.info("Select range lower bound set to current date");
         } else {
             from = ParseUtil.parseDate(sFrom, LocalDate::now);
         }
-        if (sTo == null) {
+        if (sTo == null || sTo.isEmpty()) {
             to = LocalDate.now();
             log.info("Select range upper bound set to current date");
         } else {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import org.my.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -75,10 +76,12 @@ public class Controller {
     }
 
     @GetMapping(path = "archive")
-    public Flux<String> getArchivedFeed(@RequestParam(name = "from", required = false) @Nullable String from,
-                                        @RequestParam(name = "to", required = false) @Nullable String to) {
-        return feedService.getArchivedFeed(from, to)
-                .map(Controller::createHyperlink);
+    public ResponseEntity<Flux<Tuple2<String, String>>> getArchivedFeed(@RequestParam(name = "from", required = false) @Nullable String from,
+                                                        @RequestParam(name = "to", required = false) @Nullable String to) {
+        return ResponseEntity
+                .ok()
+                .header("Access-Control-Allow-Origin", "*")
+                .body(feedService.getArchivedFeed(from, to));
     }
 
     private static String createHyperlink(Tuple2<String, String> tuple) {
